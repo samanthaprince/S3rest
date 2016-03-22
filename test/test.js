@@ -8,6 +8,7 @@ var expect = chai.expect;
 var request = chai.request;
 
 var Users = require(__dirname + '/../models/user_model.js');
+var Files = require(__dirname + '/../models/file_model.js');
 
 process.env.MONGOLAB_URI = 'mongodb://localhost/test_db';
 
@@ -42,6 +43,16 @@ describe('test user REST api', function () {
         expect(typeof res.body).to.eql('object');
         done();
       });
+  });
+
+  it('should get all files in the db', function(done) {
+    request('localhost:3000')
+    .get('/files')
+    .end(function(err, res) {
+      expect(err).to.eql(null);
+      expect(typeof res.body).to.eql('object');
+      done();
+    });
   });
 
   describe('tests need a user in the db to work with', function() {
@@ -82,4 +93,34 @@ describe('test user REST api', function () {
         });
     });
   });
+
+  describe('tests need a file in the db to work with', function() {
+    beforeEach(function(done) {
+      var testFile = new Files({fileName: 'test file'});
+      console.log('testFile' + testFile);
+      testFile.save(function(err, data) {
+        if(err) throw err;
+        this.testFile = data;
+        done();
+      }.bind(this));
+    });
+
+    it('should be able to make a user in a beforeEach block', function() {
+      expect(this.testFile.fileName).to.eql('test file');
+      expect(this.testFile).to.have.property('fileName');
+    });
+
+    it('should get one file from the db', function(done) {
+      var id = this.testFile._id;
+      request('localhost:3000')
+      .get('/files/' + id)
+      .end(function(err, res) {
+        expect(err).to.eql(null);
+        expect(res.body).to.have.property('_id');
+        done();
+      });
+    });
+  });
+
+
 });

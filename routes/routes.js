@@ -178,7 +178,7 @@ userRouter.delete('/users/:user/files/:file', (req, res) => {
     fileName = file.fileName;
     console.log('filename of null: ' + file);
     var params = {
-      Bucket: 'samanthaprince',
+      Bucket: 'sprince',
       Key: fileName
     };
     s3.deleteObject(params, function (err, data) {
